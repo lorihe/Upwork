@@ -111,11 +111,13 @@ class Scrape:
                     job_title, company_name, company_url, payment, job_type = self.get_basics()
                     has_keyword_1 = self.check_keyword(keywords_dict1)
                     has_keyword_2 = self.check_keyword(keywords_dict2)
+                    has_keyword_3 = self.check_keyword(keywords_dict3)
 
                     job_info = {'job_title': job_title, 'company_name': company_name, 'company_url': company_url,
                                 'payment': payment, 'job_type': job_type, 'job_url': job_url,
                                 f'has_{keywords_dict1["category"]}': has_keyword_1,
                                 f'has_{keywords_dict2["category"]}': has_keyword_2,
+                                f'has_{keywords_dict3["category"]}': has_keyword_3,
                                 }
                     job_info_page.append(job_info)
 
@@ -174,8 +176,7 @@ class Scrape:
                 EC.presence_of_element_located((By.ID, "jobDescriptionText"))
             )
             job_desc_text = job_desc.text
-            keywords_pattern = '|'.join([re.escape(keyword) for keyword in keywords_dict['words']])
-            has_keyword = re.search(keywords_pattern, job_desc_text, re.IGNORECASE) is not None
+            has_keyword = any(keyword.lower() in job_desc_text.lower() for keyword in keywords_dict['words'])
 
         except Exception as e:
             print(f"Error occurred: {e}")
@@ -196,8 +197,7 @@ def main(url):
     current.click_page(3)
 
     jobs_all += current.get_info()
-    for i in range(10):
-        print(i+4)
+    for i in range(20):
         current.click_page(4)
         jobs_all += current.get_info()
 
@@ -207,7 +207,8 @@ def main(url):
 
     current.driver.quit()
 
-    info_df.to_csv(f'{date_today}_{keywords_dict1["category"]}__{keywords_dict2["category"]}_2.csv', index = False)
+    info_df.to_csv(
+        f'{date_today}_{keywords_dict1["category"]}_{keywords_dict2["category"]}_{keywords_dict3["category"]}.csv', index = False)
 
 
 if __name__ == "__main__":
@@ -218,12 +219,17 @@ if __name__ == "__main__":
     JOBKEY = "data analyst"
     LOCATION = "New York, NY"
 
-    KEYWORDS_sport = {'category': 'sport', 'words': ["sport", "sports"]}
-    KEYWORDS_python = {'category': 'python', 'words': ["python"]}
+    KEYWORDS_sport = {'category': 'sport', 'words': [" sport ", " sports "]}
+    KEYWORDS_python = {'category': 'python', 'words': [" python "]}
+    KEYWORDS_3D = {'category': '3D', 'words': [" 3D "]}
 
     keywords_dict1 = KEYWORDS_sport
     keywords_dict2 = KEYWORDS_python
+    keywords_dict3 = KEYWORDS_3D
 
+    start_time = time.time()
     main(indeed_url)
+    end_time = time.time()
+    print((end_time - start_time)/60)
 
 #    get_job_urls()
