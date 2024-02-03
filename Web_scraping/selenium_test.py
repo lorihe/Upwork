@@ -20,7 +20,7 @@ pd.set_option('display.max_columns', None)
 
 
 # options = Options()
-# proxy_server_url = "149.215.113.110:70"
+# proxy_server_url = ""
 # options.add_argument(f'--proxy-server={proxy_server_url}')
 
 
@@ -30,6 +30,7 @@ class Scrape:
         self.driver.get(url)
 
     def key_loc_click(self):
+        time.sleep((1))
         try:
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.ID, "text-input-what"))
@@ -222,10 +223,11 @@ if __name__ == "__main__":
     KEYWORDS_sport = {'category': 'sport', 'words': [" sport ", " sports "]}
     KEYWORDS_python = {'category': 'python', 'words': [" python "]}
     KEYWORDS_3D = {'category': '3D', 'words': [" 3D "]}
+    KEYWORDS_junior = {'category': 'junior', 'words': [" junior ", "entry-level", " 0-1 ", " 1-2 ", " 1+ "]}
 
     keywords_dict1 = KEYWORDS_sport
     keywords_dict2 = KEYWORDS_python
-    keywords_dict3 = KEYWORDS_3D
+    keywords_dict3 = KEYWORDS_junior
 
     start_time = time.time()
     main(indeed_url)
